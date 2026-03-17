@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { 
@@ -20,7 +20,8 @@ import {
   Dodecahedron,
   Cone,
   Cylinder,
-  Environment 
+  Environment,
+  Grid
 } from "@react-three/drei";
 import * as THREE from "three";
 import { Globe, UserPlus, HardHat, Rocket } from "lucide-react";
@@ -193,17 +194,18 @@ const Solution3D = () => {
         </Box>
         
         {/* Grid lines */}
-        <group position={[0, 0, 0.03]}>
-          {Array.from({ length: 21 }).map((_, i) => (
-            <Box key={`v-${i}`} args={[0.02, 14, 0.01]} position={[-10 + i, 0, 0]}>
-              <meshBasicMaterial color="#1e3a8a" transparent opacity={0.5} />
-            </Box>
-          ))}
-          {Array.from({ length: 15 }).map((_, i) => (
-            <Box key={`h-${i}`} args={[20, 0.02, 0.01]} position={[0, -7 + i, 0]}>
-              <meshBasicMaterial color="#1e3a8a" transparent opacity={0.5} />
-            </Box>
-          ))}
+        <group position={[0, 0, 0.03]} rotation={[Math.PI / 2, 0, 0]}>
+          <Grid 
+            args={[20, 14]} 
+            cellSize={1} 
+            cellThickness={1} 
+            cellColor="#1e3a8a" 
+            sectionSize={5} 
+            sectionThickness={1.5} 
+            sectionColor="#1e3a8a" 
+            fadeDistance={30} 
+            fadeStrength={1} 
+          />
         </group>
 
         {/* Floor Plan Lines */}
@@ -398,7 +400,7 @@ const ThankYou3D = () => {
 
   return (
     <group ref={group} position={[0, -1.5, -5]}>
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={2} />
+      <Stars radius={100} depth={50} count={1500} factor={4} saturation={0} fade speed={2} />
       {/* Mason Worker */}
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
         <group position={[0, 1, 0]}>
@@ -457,23 +459,41 @@ const ThankYou3D = () => {
 };
 
 // --- REUSABLE COMPONENTS ---
-const Section = ({ children, canvas, className = "" }: { children: React.ReactNode, canvas?: React.ReactNode, className?: string }) => (
-  <section className={`min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden ${className}`}>
-    {canvas && (
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 10]} intensity={1} />
-          {canvas}
-          <Environment preset="city" />
-        </Canvas>
+const Section = ({ children, canvas, className = "" }: { children: React.ReactNode, canvas?: React.ReactNode, className?: string }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { rootMargin: "200px 0px" }
+    );
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section ref={ref} className={`min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden ${className}`}>
+      {canvas && isVisible && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 8], fov: 50 }}>
+            <ambientLight intensity={0.5} />
+            <directionalLight position={[10, 10, 10]} intensity={1} />
+            {canvas}
+            <Environment preset="city" />
+          </Canvas>
+        </div>
+      )}
+      <div className="z-10 w-full flex flex-col items-center">
+        {children}
       </div>
-    )}
-    <div className="z-10 w-full flex flex-col items-center">
-      {children}
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const Title = ({ children }: { children: React.ReactNode }) => (
   <motion.h2 
