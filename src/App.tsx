@@ -18,10 +18,12 @@ import {
   Icosahedron,
   Octahedron,
   Dodecahedron,
+  Cone,
+  Cylinder,
   Environment 
 } from "@react-three/drei";
 import * as THREE from "three";
-import { Globe } from "lucide-react";
+import { Globe, UserPlus, HardHat, Rocket } from "lucide-react";
 
 // --- TRANSLATIONS ---
 const t = {
@@ -34,6 +36,13 @@ const t = {
     solClient: "Client",
     solMat: "Matériaux",
     solOuv: "Artisans",
+    hiwTitle: "Comment ça marche",
+    hiw1: "Créez votre compte",
+    hiw1Sub: "Inscription simple et rapide",
+    hiw2: "Choisissez votre profil",
+    hiw2Sub: "Client, artisan ou fournisseur",
+    hiw3: "Vivez l'expérience",
+    hiw3Sub: "Gérez vos projets en toute fluidité",
     whyTitle: "Pourquoi Maintenant ?",
     why1: "Tourisme",
     why2: "Digitalisation",
@@ -70,6 +79,13 @@ const t = {
     solClient: "Client",
     solMat: "Materials",
     solOuv: "Workers",
+    hiwTitle: "How it works",
+    hiw1: "Create your account",
+    hiw1Sub: "Quick and easy registration",
+    hiw2: "Choose your profile",
+    hiw2Sub: "Client, artisan, or supplier",
+    hiw3: "Live the experience",
+    hiw3Sub: "Manage your projects seamlessly",
     whyTitle: "Why Now?",
     why1: "Tourism",
     why2: "Digitalization",
@@ -129,39 +145,146 @@ const Problem3D = () => (
   </Float>
 );
 
+const BlueprintWalls = () => (
+  <group position={[0, 0, 0.02]}>
+    {/* Outer Walls */}
+    <Box args={[10, 0.1, 0.1]} position={[0, 4, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[10, 0.1, 0.1]} position={[0, -4, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[0.1, 8, 0.1]} position={[-5, 0, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[0.1, 8, 0.1]} position={[5, 0, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+
+    {/* Inner Rooms */}
+    <Box args={[4, 0.1, 0.1]} position={[-3, 0, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[0.1, 4, 0.1]} position={[-1, 2, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[0.1, 3, 0.1]} position={[2, -2.5, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[3, 0.1, 0.1]} position={[3.5, -1, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[0.1, 2, 0.1]} position={[1, 3, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+    <Box args={[2, 0.1, 0.1]} position={[2, 2, 0]}><meshBasicMaterial color="#ffffff" /></Box>
+
+    {/* Doors (gaps filled with background color) */}
+    <Box args={[0.8, 0.11, 0.12]} position={[-1, 0, 0]}><meshBasicMaterial color="#0f172a" /></Box>
+    <Box args={[0.11, 0.8, 0.12]} position={[2, -1.5, 0]}><meshBasicMaterial color="#0f172a" /></Box>
+    <Box args={[0.8, 0.11, 0.12]} position={[0, -4, 0]}><meshBasicMaterial color="#0f172a" /></Box>
+
+    {/* Measurements / Details */}
+    <Box args={[1, 0.05, 0.02]} position={[-3, 4.3, 0]}><meshBasicMaterial color="#93c5fd" /></Box>
+    <Box args={[0.05, 1, 0.02]} position={[-5.3, 2, 0]}><meshBasicMaterial color="#93c5fd" /></Box>
+    <Box args={[0.5, 0.05, 0.02]} position={[2, 2.3, 0]}><meshBasicMaterial color="#93c5fd" /></Box>
+    <Box args={[0.8, 0.05, 0.02]} position={[3.5, -1.3, 0]}><meshBasicMaterial color="#93c5fd" /></Box>
+  </group>
+);
+
 const Solution3D = () => {
   const group = useRef<THREE.Group>(null);
   useFrame((state) => {
     if (group.current) {
-      group.current.rotation.y = state.clock.elapsedTime * 0.5;
-      group.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
+      group.current.rotation.z = state.clock.elapsedTime * 0.05;
+      group.current.rotation.x = -Math.PI / 3 + Math.sin(state.clock.elapsedTime * 0.2) * 0.05;
+      group.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.1) * 0.05;
+    }
+  });
+
+  return (
+    <group ref={group} position={[0, 0, -8]} scale={[1.5, 1.5, 1.5]}>
+      <Float speed={1} rotationIntensity={0.05} floatIntensity={0.2}>
+        {/* Main Blueprint Board */}
+        <Box args={[20, 14, 0.05]}>
+          <meshStandardMaterial color="#0f172a" roughness={0.9} />
+        </Box>
+        
+        {/* Grid lines */}
+        <group position={[0, 0, 0.03]}>
+          {Array.from({ length: 21 }).map((_, i) => (
+            <Box key={`v-${i}`} args={[0.02, 14, 0.01]} position={[-10 + i, 0, 0]}>
+              <meshBasicMaterial color="#1e3a8a" transparent opacity={0.5} />
+            </Box>
+          ))}
+          {Array.from({ length: 15 }).map((_, i) => (
+            <Box key={`h-${i}`} args={[20, 0.02, 0.01]} position={[0, -7 + i, 0]}>
+              <meshBasicMaterial color="#1e3a8a" transparent opacity={0.5} />
+            </Box>
+          ))}
+        </group>
+
+        {/* Floor Plan Lines */}
+        <BlueprintWalls />
+
+        {/* 3D Wireframe Building Emerging from the Blueprint */}
+        <group position={[0, 0, 0]}>
+          {/* Base Building */}
+          <Box args={[6, 4, 3]} position={[-1, 1, 1.5]}>
+            <meshStandardMaterial color="#60a5fa" wireframe transparent opacity={0.6} />
+          </Box>
+          {/* Roof */}
+          <Cone args={[4.5, 3, 4]} position={[-1, 1, 4.5]} rotation={[Math.PI/4, 0, 0]}>
+            <meshStandardMaterial color="#93c5fd" wireframe transparent opacity={0.8} />
+          </Cone>
+          {/* Secondary structure */}
+          <Box args={[3, 3, 2]} position={[3.5, -1.5, 1]}>
+            <meshStandardMaterial color="#3b82f6" wireframe transparent opacity={0.5} />
+          </Box>
+        </group>
+
+        {/* Floating elements (rulers, pencils, etc.) */}
+        <Float speed={2} rotationIntensity={0.5} floatIntensity={1} position={[6, 4, 1]}>
+          {/* Stylized Pencil */}
+          <group rotation={[0, 0, Math.PI / 4]}>
+            <Cylinder args={[0.1, 0.1, 3, 6]}>
+              <meshStandardMaterial color="#fbbf24" roughness={0.6} />
+            </Cylinder>
+            <Cone args={[0.1, 0.3, 6]} position={[0, -1.65, 0]} rotation={[Math.PI, 0, 0]}>
+              <meshStandardMaterial color="#fcd34d" />
+            </Cone>
+            <Cone args={[0.03, 0.1, 6]} position={[0, -1.75, 0]} rotation={[Math.PI, 0, 0]}>
+              <meshStandardMaterial color="#1e293b" />
+            </Cone>
+          </group>
+        </Float>
+
+        <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5} position={[-7, -4, 0.5]}>
+          {/* Stylized Ruler */}
+          <Box args={[0.5, 4, 0.05]} rotation={[0, 0, Math.PI / 6]}>
+            <meshStandardMaterial color="#e2e8f0" metalness={0.5} roughness={0.2} />
+          </Box>
+        </Float>
+      </Float>
+    </group>
+  );
+};
+
+const HowItWorks3D = () => {
+  const group = useRef<THREE.Group>(null);
+  useFrame((state) => {
+    if (group.current) {
+      group.current.rotation.y = state.clock.elapsedTime * 0.1;
     }
   });
   return (
-    <group ref={group}>
-      <Box args={[2, 2, 2]}>
-        <meshStandardMaterial color="#10b981" wireframe />
-      </Box>
-      <Box args={[1.9, 1.9, 1.9]}>
-        <meshStandardMaterial color="#064e3b" transparent opacity={0.8} />
-      </Box>
-      
-      {/* Orbiting spheres */}
-      <group rotation={[0, 0, Math.PI / 4]}>
-        <Sphere args={[0.4, 32, 32]} position={[4, 0, 0]}>
-          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.5} />
-        </Sphere>
-      </group>
-      <group rotation={[0, Math.PI / 3, -Math.PI / 4]}>
-        <Sphere args={[0.4, 32, 32]} position={[4, 0, 0]}>
-          <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.5} />
-        </Sphere>
-      </group>
-      <group rotation={[Math.PI / 2, 0, Math.PI / 6]}>
-        <Sphere args={[0.4, 32, 32]} position={[4, 0, 0]}>
-          <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.5} />
-        </Sphere>
-      </group>
+    <group ref={group} position={[0, 0, -5]}>
+      {/* Construction Cone */}
+      <Float speed={2} rotationIntensity={0.5} floatIntensity={1} position={[-4, -2, 0]}>
+        <Cone args={[1, 2, 16]}>
+          <meshStandardMaterial color="#f97316" roughness={0.5} wireframe />
+        </Cone>
+      </Float>
+      {/* Concrete Block 1 */}
+      <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.5} position={[3, -1, -2]}>
+        <Box args={[2, 1, 1]}>
+          <meshStandardMaterial color="#9ca3af" roughness={0.8} wireframe />
+        </Box>
+      </Float>
+      {/* Concrete Block 2 */}
+      <Float speed={1.8} rotationIntensity={0.3} floatIntensity={0.8} position={[2, 1, -1]}>
+        <Box args={[2, 1, 1]}>
+          <meshStandardMaterial color="#9ca3af" roughness={0.8} wireframe />
+        </Box>
+      </Float>
+      {/* Steel Beam / Pillar */}
+      <Float speed={1.2} rotationIntensity={0.8} floatIntensity={1.2} position={[-2, 2, -3]}>
+        <Cylinder args={[0.2, 0.2, 4, 16]} rotation={[0, 0, Math.PI / 4]}>
+          <meshStandardMaterial color="#eab308" metalness={0.8} roughness={0.2} wireframe />
+        </Cylinder>
+      </Float>
     </group>
   );
 };
@@ -257,29 +380,78 @@ const Vision3D = () => {
 
 const Team3D = () => (
   <group>
-    <Float position={[-5, 2, -4]} speed={2} rotationIntensity={2}><Box args={[2, 2, 2]}><meshStandardMaterial color="#10b981" wireframe/></Box></Float>
-    <Float position={[-2, -3, -3]} speed={2.5} rotationIntensity={2}><Octahedron args={[2]}><meshStandardMaterial color="#ffffff" wireframe/></Octahedron></Float>
-    <Float position={[2, 3, -5]} speed={1.5} rotationIntensity={2}><Dodecahedron args={[2]}><meshStandardMaterial color="#10b981" wireframe/></Dodecahedron></Float>
-    <Float position={[5, -2, -4]} speed={3} rotationIntensity={2}><Icosahedron args={[2]}><meshStandardMaterial color="#ffffff" wireframe/></Icosahedron></Float>
+    <Float position={[-6, 2, -5]} speed={1.5} rotationIntensity={1.5}><Box args={[2, 2, 2]}><meshStandardMaterial color="#10b981" wireframe/></Box></Float>
+    <Float position={[-3, -3, -4]} speed={2} rotationIntensity={1.5}><Octahedron args={[2]}><meshStandardMaterial color="#ffffff" wireframe/></Octahedron></Float>
+    <Float position={[0, 3, -6]} speed={1.2} rotationIntensity={1.5}><Dodecahedron args={[2]}><meshStandardMaterial color="#10b981" wireframe/></Dodecahedron></Float>
+    <Float position={[3, -2, -4]} speed={2.5} rotationIntensity={1.5}><Icosahedron args={[2]}><meshStandardMaterial color="#ffffff" wireframe/></Icosahedron></Float>
+    <Float position={[6, 2, -5]} speed={1.8} rotationIntensity={1.5}><Torus args={[1.2, 0.4, 16, 32]}><meshStandardMaterial color="#10b981" wireframe/></Torus></Float>
   </group>
 );
 
 const ThankYou3D = () => {
-  const ref = useRef<THREE.Group>(null);
+  const group = useRef<THREE.Group>(null);
   useFrame((state) => {
-    if(ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.1;
-      ref.current.rotation.z = state.clock.elapsedTime * 0.05;
+    if (group.current) {
+      group.current.rotation.y = state.clock.elapsedTime * 0.2;
     }
   });
+
   return (
-    <group ref={ref}>
+    <group ref={group} position={[0, -1.5, -5]}>
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={2} />
-      <Float>
-        <Sphere args={[3, 64, 64]}>
-          <meshStandardMaterial color="#000000" metalness={1} roughness={0} />
-        </Sphere>
+      {/* Mason Worker */}
+      <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
+        <group position={[0, 1, 0]}>
+          {/* Body */}
+          <Cylinder args={[0.6, 0.6, 1.5, 16]} position={[0, 0, 0]}>
+            <meshStandardMaterial color="#f97316" roughness={0.8} /> {/* Orange vest */}
+          </Cylinder>
+          {/* Head */}
+          <Sphere args={[0.4, 32, 32]} position={[0, 1.1, 0]}>
+            <meshStandardMaterial color="#fcd34d" roughness={0.5} /> {/* Skin tone */}
+          </Sphere>
+          {/* Hard Hat */}
+          <Sphere args={[0.42, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]} position={[0, 1.15, 0]}>
+            <meshStandardMaterial color="#eab308" roughness={0.3} /> {/* Yellow hat */}
+          </Sphere>
+          {/* Hard Hat Brim */}
+          <Cylinder args={[0.5, 0.5, 0.05, 32]} position={[0, 1.15, 0]}>
+            <meshStandardMaterial color="#eab308" roughness={0.3} />
+          </Cylinder>
+          
+          {/* Arm holding trowel */}
+          <group position={[0.7, 0.2, 0]} rotation={[0, 0, Math.PI / 4]}>
+            <Cylinder args={[0.15, 0.15, 0.8, 16]} position={[0, -0.4, 0]}>
+              <meshStandardMaterial color="#f97316" roughness={0.8} />
+            </Cylinder>
+            {/* Hand */}
+            <Sphere args={[0.15, 16, 16]} position={[0, -0.8, 0]}>
+              <meshStandardMaterial color="#fcd34d" roughness={0.5} />
+            </Sphere>
+            {/* Trowel */}
+            <group position={[0, -1, 0]} rotation={[0, 0, -Math.PI / 4]}>
+              <Cylinder args={[0.05, 0.05, 0.4, 8]} position={[0, 0, 0]}>
+                <meshStandardMaterial color="#78350f" roughness={0.9} /> {/* Handle */}
+              </Cylinder>
+              <Box args={[0.3, 0.02, 0.4]} position={[0.15, -0.2, 0]}>
+                <meshStandardMaterial color="#9ca3af" metalness={0.8} roughness={0.2} /> {/* Blade */}
+              </Box>
+            </group>
+          </group>
+        </group>
       </Float>
+
+      {/* Brick Wall being built */}
+      <group position={[-2, -0.5, 1]}>
+        <Box args={[1, 0.4, 0.5]} position={[0, 0, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+        <Box args={[1, 0.4, 0.5]} position={[1.1, 0, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+        <Box args={[1, 0.4, 0.5]} position={[2.2, 0, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+        
+        <Box args={[1, 0.4, 0.5]} position={[0.55, 0.45, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+        <Box args={[1, 0.4, 0.5]} position={[1.65, 0.45, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+        
+        <Box args={[1, 0.4, 0.5]} position={[1.1, 0.9, 0]}><meshStandardMaterial color="#b91c1c" roughness={0.9} /></Box>
+      </group>
     </group>
   );
 };
@@ -402,6 +574,46 @@ const Solution = ({ lang }: { lang: 'fr' | 'en' }) => (
     </div>
   </Section>
 );
+
+const HowItWorks = ({ lang }: { lang: 'fr' | 'en' }) => {
+  const steps = [
+    { title: t[lang].hiw1, sub: t[lang].hiw1Sub, icon: UserPlus, color: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-900/20" },
+    { title: t[lang].hiw2, sub: t[lang].hiw2Sub, icon: HardHat, color: "text-fuchsia-400", border: "border-fuchsia-500/30", bg: "bg-fuchsia-900/20" },
+    { title: t[lang].hiw3, sub: t[lang].hiw3Sub, icon: Rocket, color: "text-blue-400", border: "border-blue-500/30", bg: "bg-blue-900/20" }
+  ];
+  return (
+    <Section className="bg-zinc-900" canvas={<HowItWorks3D />}>
+      <Title>{t[lang].hiwTitle}</Title>
+      <div className="flex flex-col md:flex-row justify-center items-stretch gap-8 w-full max-w-6xl relative">
+        {/* Connecting line for desktop */}
+        <div className="hidden md:block absolute top-1/2 left-10 right-10 h-0.5 bg-white/10 -z-10 transform -translate-y-1/2" />
+        
+        {steps.map((step, i) => {
+          const Icon = step.icon;
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.2, duration: 0.6 }}
+              className="flex-1 flex flex-col items-center text-center bg-black/60 backdrop-blur-md p-8 rounded-3xl border border-white/5 relative"
+            >
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 border ${step.border} ${step.bg} ${step.color}`}>
+                <Icon size={32} strokeWidth={1.5} />
+              </div>
+              <div className={`absolute -top-4 -right-4 w-10 h-10 rounded-full border flex items-center justify-center font-mono text-lg ${step.border} ${step.bg} ${step.color}`}>
+                {i + 1}
+              </div>
+              <h3 className="text-2xl font-light tracking-tight text-white/90 mb-3">{step.title}</h3>
+              <p className="text-sm font-light tracking-widest text-white/50 uppercase">{step.sub}</p>
+            </motion.div>
+          );
+        })}
+      </div>
+    </Section>
+  );
+};
 
 const WhyNow = ({ lang }: { lang: 'fr' | 'en' }) => (
   <Section className="bg-zinc-950" canvas={<WhyNow3D />}>
@@ -526,19 +738,19 @@ const Vision = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const Team = ({ lang }: { lang: 'fr' | 'en' }) => {
-  const members = ["CHANCE", "GOUDAYI", "AMEGAH", "YANIS"];
+  const members = ["CHANCE", "GOUDAYI", "AMEGAH", "YANIS", "GERMAIN"];
   return (
     <Section className="bg-zinc-950" canvas={<Team3D />}>
       <Title>{t[lang].teamTitle}</Title>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 w-full max-w-6xl">
+      <div className="flex flex-wrap justify-center gap-6 md:gap-10 w-full max-w-6xl">
         {members.map((name, i) => (
           <motion.div
             key={name}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: i * 0.1 }}
-            className="flex flex-col items-center bg-black/40 backdrop-blur-md p-8 rounded-3xl border border-white/10"
+            transition={{ delay: i * 0.15, duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-md px-8 py-8 rounded-3xl border border-white/10 min-w-[220px] hover:bg-white/5 transition-colors duration-500"
           >
             <h3 className="text-xl md:text-2xl font-light tracking-widest text-white/80">{name}</h3>
           </motion.div>
@@ -586,6 +798,7 @@ export default function App() {
       <Hero lang={lang} />
       <Problem lang={lang} />
       <Solution lang={lang} />
+      <HowItWorks lang={lang} />
       <WhyNow lang={lang} />
       <BusinessModel lang={lang} />
       <MarketSize lang={lang} />
