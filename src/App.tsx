@@ -759,7 +759,7 @@ const Vision = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const Team = ({ lang }: { lang: 'fr' | 'en' }) => {
-  const members = ["CHANCE", "GOUDAYI", "AMEGAH", "YANIS", "GERMAIN"];
+  const members = ["CHANCE", "PRINCE", "EMERIC", "YANIS", "GERMAIN"];
   return (
     <Section className="bg-slate-100 dark:bg-zinc-950 transition-colors duration-500" canvas={<Team3D />}>
       <Title>{t[lang].teamTitle}</Title>
