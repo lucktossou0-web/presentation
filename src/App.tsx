@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, createContext, useContext } from "react";
 import { motion } from "motion/react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { 
@@ -19,12 +19,13 @@ import {
   Octahedron,
   Dodecahedron,
   Cone,
-  Cylinder,
   Environment,
   Grid
 } from "@react-three/drei";
 import * as THREE from "three";
-import { Globe, UserPlus, HardHat, Rocket } from "lucide-react";
+import { Globe, UserPlus, HardHat, Rocket, Sun, Moon } from "lucide-react";
+
+const ThemeContext = createContext<'light' | 'dark'>('dark');
 
 // --- TRANSLATIONS ---
 const t = {
@@ -501,7 +502,7 @@ const Title = ({ children }: { children: React.ReactNode }) => (
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: "-100px" }}
     transition={{ duration: 0.8, ease: "easeOut" }}
-    className="text-4xl md:text-7xl font-black mb-20 tracking-tighter text-center text-white/90 drop-shadow-2xl"
+    className="text-4xl md:text-7xl font-black mb-20 tracking-tighter text-center text-slate-900/90 dark:text-white/90 drop-shadow-2xl"
   >
     {children}
   </motion.h2>
@@ -510,22 +511,22 @@ const Title = ({ children }: { children: React.ReactNode }) => (
 // --- PAGES ---
 
 const Hero = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<Hero3D />}>
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-900/20 rounded-full blur-[120px] pointer-events-none" />
+  <Section className="bg-slate-50 dark:bg-black transition-colors duration-500" canvas={<Hero3D />}>
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/10 dark:bg-emerald-900/20 rounded-full blur-[120px] pointer-events-none" />
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 1.5, ease: "easeOut" }}
-      className="z-10 flex flex-col items-center bg-black/40 backdrop-blur-sm p-12 rounded-[3rem] border border-white/5"
+      className="z-10 flex flex-col items-center bg-white/40 dark:bg-black/40 backdrop-blur-sm p-12 rounded-[3rem] border border-black/5 dark:border-white/5 shadow-xl dark:shadow-none"
     >
-      <h1 className="text-6xl md:text-[9rem] font-black tracking-tighter leading-none text-center bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40">
+      <h1 className="text-6xl md:text-[9rem] font-black tracking-tighter leading-none text-center bg-clip-text text-transparent bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-white/40">
         BUILD<br/>CONNECT<br/>AFRICA
       </h1>
       <motion.p 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1, duration: 1 }}
-        className="mt-12 text-2xl md:text-4xl font-light tracking-widest text-emerald-400/80 uppercase"
+        className="mt-12 text-2xl md:text-4xl font-light tracking-widest text-emerald-600 dark:text-emerald-400/80 uppercase"
       >
         {t[lang].heroSub}
       </motion.p>
@@ -534,16 +535,16 @@ const Hero = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const Problem = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-zinc-950" canvas={<Problem3D />}>
+  <Section className="bg-slate-100 dark:bg-zinc-950 transition-colors duration-500" canvas={<Problem3D />}>
     <Title>{t[lang].probTitle}</Title>
     <div className="flex flex-col md:flex-row gap-16 md:gap-32 w-full max-w-6xl justify-center items-center">
       <motion.div 
         initial={{ opacity: 0, x: -50 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
-        className="flex flex-col items-center text-center group bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-red-900/30"
+        className="flex flex-col items-center text-center group bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-red-200 dark:border-red-900/30 shadow-lg dark:shadow-none"
       >
-        <h3 className="text-2xl md:text-4xl font-light text-white/80">{t[lang].prob1}</h3>
+        <h3 className="text-2xl md:text-4xl font-light text-slate-800 dark:text-white/80">{t[lang].prob1}</h3>
       </motion.div>
 
       <motion.div 
@@ -551,23 +552,23 @@ const Problem = ({ lang }: { lang: 'fr' | 'en' }) => (
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.2 }}
-        className="flex flex-col items-center text-center group bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-red-900/30"
+        className="flex flex-col items-center text-center group bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-red-200 dark:border-red-900/30 shadow-lg dark:shadow-none"
       >
-        <h3 className="text-2xl md:text-4xl font-light text-white/80">{t[lang].prob2}</h3>
+        <h3 className="text-2xl md:text-4xl font-light text-slate-800 dark:text-white/80">{t[lang].prob2}</h3>
       </motion.div>
     </div>
   </Section>
 );
 
 const Solution = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<Solution3D />}>
+  <Section className="bg-slate-50 dark:bg-black transition-colors duration-500" canvas={<Solution3D />}>
     <Title>{t[lang].solTitle}</Title>
     <div className="relative z-10 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 w-full max-w-7xl">
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="text-3xl font-light text-white/60 bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/10"
+        className="text-3xl font-light text-slate-700 dark:text-white/60 bg-white/60 dark:bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-slate-200 dark:border-white/10 shadow-md dark:shadow-none"
       >
         {t[lang].solClient}
       </motion.div>
@@ -577,7 +578,7 @@ const Solution = ({ lang }: { lang: 'fr' | 'en' }) => (
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          className="text-3xl font-light text-white/60 bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/10"
+          className="text-3xl font-light text-slate-700 dark:text-white/60 bg-white/60 dark:bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-slate-200 dark:border-white/10 shadow-md dark:shadow-none"
         >
           {t[lang].solMat}
         </motion.div>
@@ -586,7 +587,7 @@ const Solution = ({ lang }: { lang: 'fr' | 'en' }) => (
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="text-3xl font-light text-white/60 bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/10"
+          className="text-3xl font-light text-slate-700 dark:text-white/60 bg-white/60 dark:bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-slate-200 dark:border-white/10 shadow-md dark:shadow-none"
         >
           {t[lang].solOuv}
         </motion.div>
@@ -597,16 +598,16 @@ const Solution = ({ lang }: { lang: 'fr' | 'en' }) => (
 
 const HowItWorks = ({ lang }: { lang: 'fr' | 'en' }) => {
   const steps = [
-    { title: t[lang].hiw1, sub: t[lang].hiw1Sub, icon: UserPlus, color: "text-emerald-400", border: "border-emerald-500/30", bg: "bg-emerald-900/20" },
-    { title: t[lang].hiw2, sub: t[lang].hiw2Sub, icon: HardHat, color: "text-fuchsia-400", border: "border-fuchsia-500/30", bg: "bg-fuchsia-900/20" },
-    { title: t[lang].hiw3, sub: t[lang].hiw3Sub, icon: Rocket, color: "text-blue-400", border: "border-blue-500/30", bg: "bg-blue-900/20" }
+    { title: t[lang].hiw1, sub: t[lang].hiw1Sub, icon: UserPlus, color: "text-emerald-600 dark:text-emerald-400", border: "border-emerald-200 dark:border-emerald-500/30", bg: "bg-emerald-50 dark:bg-emerald-900/20" },
+    { title: t[lang].hiw2, sub: t[lang].hiw2Sub, icon: HardHat, color: "text-fuchsia-600 dark:text-fuchsia-400", border: "border-fuchsia-200 dark:border-fuchsia-500/30", bg: "bg-fuchsia-50 dark:bg-fuchsia-900/20" },
+    { title: t[lang].hiw3, sub: t[lang].hiw3Sub, icon: Rocket, color: "text-blue-600 dark:text-blue-400", border: "border-blue-200 dark:border-blue-500/30", bg: "bg-blue-50 dark:bg-blue-900/20" }
   ];
   return (
-    <Section className="bg-zinc-900" canvas={<HowItWorks3D />}>
+    <Section className="bg-slate-100 dark:bg-zinc-900 transition-colors duration-500" canvas={<HowItWorks3D />}>
       <Title>{t[lang].hiwTitle}</Title>
       <div className="flex flex-col md:flex-row justify-center items-stretch gap-8 w-full max-w-6xl relative">
         {/* Connecting line for desktop */}
-        <div className="hidden md:block absolute top-1/2 left-10 right-10 h-0.5 bg-white/10 -z-10 transform -translate-y-1/2" />
+        <div className="hidden md:block absolute top-1/2 left-10 right-10 h-0.5 bg-slate-300 dark:bg-white/10 -z-10 transform -translate-y-1/2" />
         
         {steps.map((step, i) => {
           const Icon = step.icon;
@@ -617,7 +618,7 @@ const HowItWorks = ({ lang }: { lang: 'fr' | 'en' }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2, duration: 0.6 }}
-              className="flex-1 flex flex-col items-center text-center bg-black/60 backdrop-blur-md p-8 rounded-3xl border border-white/5 relative"
+              className="flex-1 flex flex-col items-center text-center bg-white/80 dark:bg-black/60 backdrop-blur-md p-8 rounded-3xl border border-slate-200 dark:border-white/5 relative shadow-lg dark:shadow-none"
             >
               <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 border ${step.border} ${step.bg} ${step.color}`}>
                 <Icon size={32} strokeWidth={1.5} />
@@ -625,8 +626,8 @@ const HowItWorks = ({ lang }: { lang: 'fr' | 'en' }) => {
               <div className={`absolute -top-4 -right-4 w-10 h-10 rounded-full border flex items-center justify-center font-mono text-lg ${step.border} ${step.bg} ${step.color}`}>
                 {i + 1}
               </div>
-              <h3 className="text-2xl font-light tracking-tight text-white/90 mb-3">{step.title}</h3>
-              <p className="text-sm font-light tracking-widest text-white/50 uppercase">{step.sub}</p>
+              <h3 className="text-2xl font-light tracking-tight text-slate-900 dark:text-white/90 mb-3">{step.title}</h3>
+              <p className="text-sm font-light tracking-widest text-slate-500 dark:text-white/50 uppercase">{step.sub}</p>
             </motion.div>
           );
         })}
@@ -636,7 +637,7 @@ const HowItWorks = ({ lang }: { lang: 'fr' | 'en' }) => {
 };
 
 const WhyNow = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-zinc-950" canvas={<WhyNow3D />}>
+  <Section className="bg-slate-50 dark:bg-zinc-950 transition-colors duration-500" canvas={<WhyNow3D />}>
     <Title>{t[lang].whyTitle}</Title>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24 w-full max-w-6xl">
       {[
@@ -650,9 +651,9 @@ const WhyNow = ({ lang }: { lang: 'fr' | 'en' }) => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.2 }}
-          className="flex flex-col items-center text-center bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-white/10"
+          className="flex flex-col items-center text-center bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-slate-200 dark:border-white/10 shadow-lg dark:shadow-none"
         >
-          <h3 className="text-3xl md:text-5xl font-light tracking-tight text-white/90">{item.text}</h3>
+          <h3 className="text-3xl md:text-5xl font-light tracking-tight text-slate-800 dark:text-white/90">{item.text}</h3>
         </motion.div>
       ))}
     </div>
@@ -660,7 +661,7 @@ const WhyNow = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const BusinessModel = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<BusinessModel3D />}>
+  <Section className="bg-slate-100 dark:bg-black transition-colors duration-500" canvas={<BusinessModel3D />}>
     <Title>{t[lang].bmTitle}</Title>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24 w-full max-w-6xl">
       {[
@@ -674,10 +675,10 @@ const BusinessModel = ({ lang }: { lang: 'fr' | 'en' }) => (
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.2 }}
-          className="flex flex-col items-center text-center bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-900/30"
+          className="flex flex-col items-center text-center bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-lg dark:shadow-none"
         >
-          <h3 className="text-3xl md:text-4xl font-light tracking-tight text-white/90 mb-4">{item.title}</h3>
-          <p className="text-lg md:text-xl font-light tracking-widest text-emerald-400/80 uppercase">{item.sub}</p>
+          <h3 className="text-3xl md:text-4xl font-light tracking-tight text-slate-800 dark:text-white/90 mb-4">{item.title}</h3>
+          <p className="text-lg md:text-xl font-light tracking-widest text-emerald-600 dark:text-emerald-400/80 uppercase">{item.sub}</p>
         </motion.div>
       ))}
     </div>
@@ -685,7 +686,7 @@ const BusinessModel = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const MarketSize = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<MarketSize3D />}>
+  <Section className="bg-slate-50 dark:bg-black transition-colors duration-500" canvas={<MarketSize3D />}>
     <Title>{t[lang].marketTitle}</Title>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-16 w-full max-w-7xl">
       {[
@@ -699,12 +700,12 @@ const MarketSize = ({ lang }: { lang: 'fr' | 'en' }) => (
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: i * 0.2, duration: 0.8 }}
-          className="flex flex-col items-center justify-center text-center bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-900/30"
+          className="flex flex-col items-center justify-center text-center bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-lg dark:shadow-none"
         >
-          <span className="text-6xl md:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-emerald-400 to-emerald-900 mb-4">
+          <span className="text-6xl md:text-8xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-emerald-600 to-emerald-900 dark:from-emerald-400 dark:to-emerald-900 mb-4">
             {item.val}
           </span>
-          <span className="text-xl md:text-2xl font-light tracking-widest text-white/40 uppercase">
+          <span className="text-xl md:text-2xl font-light tracking-widest text-slate-500 dark:text-white/40 uppercase">
             {item.sub}
           </span>
         </motion.div>
@@ -714,16 +715,16 @@ const MarketSize = ({ lang }: { lang: 'fr' | 'en' }) => (
 );
 
 const GoToMarket = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-zinc-950" canvas={<GoToMarket3D />}>
+  <Section className="bg-slate-100 dark:bg-zinc-950 transition-colors duration-500" canvas={<GoToMarket3D />}>
     <Title>{t[lang].gtmTitle}</Title>
     <div className="flex flex-col md:flex-row gap-16 md:gap-32 w-full max-w-5xl justify-center items-center">
       <motion.div 
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="flex flex-col items-center text-center bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-900/30"
+        className="flex flex-col items-center text-center bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-emerald-200 dark:border-emerald-900/30 shadow-lg dark:shadow-none"
       >
-        <h3 className="text-3xl md:text-4xl font-light text-white/90">{t[lang].gtm1}</h3>
+        <h3 className="text-3xl md:text-4xl font-light text-slate-800 dark:text-white/90">{t[lang].gtm1}</h3>
       </motion.div>
 
       <motion.div 
@@ -731,26 +732,26 @@ const GoToMarket = ({ lang }: { lang: 'fr' | 'en' }) => (
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.3 }}
-        className="flex flex-col items-center text-center bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-blue-900/30"
+        className="flex flex-col items-center text-center bg-white/60 dark:bg-black/40 backdrop-blur-md p-10 rounded-3xl border border-blue-200 dark:border-blue-900/30 shadow-lg dark:shadow-none"
       >
-        <h3 className="text-3xl md:text-4xl font-light text-white/90">{t[lang].gtm2}</h3>
+        <h3 className="text-3xl md:text-4xl font-light text-slate-800 dark:text-white/90">{t[lang].gtm2}</h3>
       </motion.div>
     </div>
   </Section>
 );
 
 const Vision = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<Vision3D />}>
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-900/20 blur-[150px] pointer-events-none" />
+  <Section className="bg-slate-50 dark:bg-black transition-colors duration-500" canvas={<Vision3D />}>
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-emerald-500/10 dark:bg-emerald-900/20 blur-[150px] pointer-events-none" />
     <Title>{t[lang].visTitle}</Title>
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 1 }}
-      className="flex flex-col items-center text-center z-10 bg-black/40 backdrop-blur-md p-16 rounded-[3rem] border border-emerald-900/30"
+      className="flex flex-col items-center text-center z-10 bg-white/60 dark:bg-black/40 backdrop-blur-md p-16 rounded-[3rem] border border-emerald-200 dark:border-emerald-900/30 shadow-xl dark:shadow-none"
     >
-      <h3 className="text-4xl md:text-7xl font-light tracking-tight text-white/90 max-w-4xl leading-tight">
+      <h3 className="text-4xl md:text-7xl font-light tracking-tight text-slate-900 dark:text-white/90 max-w-4xl leading-tight">
         {t[lang].vis1}
       </h3>
     </motion.div>
@@ -760,7 +761,7 @@ const Vision = ({ lang }: { lang: 'fr' | 'en' }) => (
 const Team = ({ lang }: { lang: 'fr' | 'en' }) => {
   const members = ["CHANCE", "GOUDAYI", "AMEGAH", "YANIS", "GERMAIN"];
   return (
-    <Section className="bg-zinc-950" canvas={<Team3D />}>
+    <Section className="bg-slate-100 dark:bg-zinc-950 transition-colors duration-500" canvas={<Team3D />}>
       <Title>{t[lang].teamTitle}</Title>
       <div className="flex flex-wrap justify-center gap-6 md:gap-10 w-full max-w-6xl">
         {members.map((name, i) => (
@@ -770,9 +771,9 @@ const Team = ({ lang }: { lang: 'fr' | 'en' }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.15, duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center bg-black/40 backdrop-blur-md px-8 py-8 rounded-3xl border border-white/10 min-w-[220px] hover:bg-white/5 transition-colors duration-500"
+            className="flex flex-col items-center justify-center bg-white/60 dark:bg-black/40 backdrop-blur-md px-8 py-8 rounded-3xl border border-slate-200 dark:border-white/10 min-w-[220px] hover:bg-slate-50 dark:hover:bg-white/5 transition-colors duration-500 shadow-md dark:shadow-none"
           >
-            <h3 className="text-xl md:text-2xl font-light tracking-widest text-white/80">{name}</h3>
+            <h3 className="text-xl md:text-2xl font-light tracking-widest text-slate-800 dark:text-white/80">{name}</h3>
           </motion.div>
         ))}
       </div>
@@ -781,18 +782,18 @@ const Team = ({ lang }: { lang: 'fr' | 'en' }) => {
 };
 
 const ThankYou = ({ lang }: { lang: 'fr' | 'en' }) => (
-  <Section className="bg-black" canvas={<ThankYou3D />}>
+  <Section className="bg-slate-50 dark:bg-black transition-colors duration-500" canvas={<ThankYou3D />}>
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 1.5, ease: "easeOut" }}
-      className="text-center z-10 bg-black/40 backdrop-blur-md p-16 rounded-[3rem] border border-white/5"
+      className="text-center z-10 bg-white/60 dark:bg-black/40 backdrop-blur-md p-16 rounded-[3rem] border border-slate-200 dark:border-white/5 shadow-2xl dark:shadow-none"
     >
-      <h2 className="text-7xl md:text-[12rem] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 mb-8">
+      <h2 className="text-7xl md:text-[12rem] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-400 dark:from-white dark:to-white/20 mb-8">
         {t[lang].thanks}
       </h2>
-      <p className="text-2xl md:text-4xl font-light tracking-widest text-emerald-400/80 uppercase">
+      <p className="text-2xl md:text-4xl font-light tracking-widest text-emerald-600 dark:text-emerald-400/80 uppercase">
         {t[lang].ready}
       </p>
     </motion.div>
@@ -801,31 +802,40 @@ const ThankYou = ({ lang }: { lang: 'fr' | 'en' }) => (
 
 export default function App() {
   const [lang, setLang] = useState<'fr' | 'en'>('fr');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   return (
-    <div className="font-sans bg-black text-white selection:bg-emerald-500/30 selection:text-white overflow-x-hidden">
-      {/* Language Toggle */}
-      <div className="fixed top-6 right-6 z-50">
-        <button 
-          onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}
-          className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full text-sm font-medium tracking-widest transition-all cursor-pointer"
-        >
-          <Globe size={16} />
-          {lang === 'fr' ? 'EN' : 'FR'}
-        </button>
-      </div>
+    <ThemeContext.Provider value={theme}>
+      <div className={`${theme === 'dark' ? 'dark' : ''} font-sans bg-slate-50 dark:bg-black text-slate-900 dark:text-white selection:bg-emerald-500/30 selection:text-white overflow-x-hidden min-h-screen transition-colors duration-500`}>
+        {/* Language & Theme Toggles */}
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-4">
+          <button 
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="flex items-center justify-center w-10 h-10 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full transition-all cursor-pointer text-slate-900 dark:text-white"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          <button 
+            onClick={() => setLang(lang === 'fr' ? 'en' : 'fr')}
+            className="flex items-center gap-2 bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 backdrop-blur-md border border-black/10 dark:border-white/10 px-4 py-2 rounded-full text-sm font-medium tracking-widest transition-all cursor-pointer text-slate-900 dark:text-white"
+          >
+            <Globe size={16} />
+            {lang === 'fr' ? 'EN' : 'FR'}
+          </button>
+        </div>
 
-      <Hero lang={lang} />
-      <Problem lang={lang} />
-      <Solution lang={lang} />
-      <HowItWorks lang={lang} />
-      <WhyNow lang={lang} />
-      <BusinessModel lang={lang} />
-      <MarketSize lang={lang} />
-      <GoToMarket lang={lang} />
-      <Vision lang={lang} />
-      <Team lang={lang} />
-      <ThankYou lang={lang} />
-    </div>
+        <Hero lang={lang} />
+        <Problem lang={lang} />
+        <Solution lang={lang} />
+        <HowItWorks lang={lang} />
+        <WhyNow lang={lang} />
+        <BusinessModel lang={lang} />
+        <MarketSize lang={lang} />
+        <GoToMarket lang={lang} />
+        <Vision lang={lang} />
+        <Team lang={lang} />
+        <ThankYou lang={lang} />
+      </div>
+    </ThemeContext.Provider>
   );
 }
